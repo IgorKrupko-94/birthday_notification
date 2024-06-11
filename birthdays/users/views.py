@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
@@ -11,6 +12,22 @@ from .serializers import CustomUserSerializer
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+
+    @action(detail=False)
+    def get_following(self, request):
+        """Получение подписок пользователя."""
+        user_following = User.objects.prefetch_related(
+            'follower', 'following').filter(following__user=request.user)
+        serializer = self.get_serializer(user_following, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def get_followers(self, request):
+        """Получение подписчиков пользователя."""
+        followers = User.objects.prefetch_related(
+            'follower', 'following').filter(follower__author=request.user)
+        serializer = self.get_serializer(followers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class FollowAPIView(APIView):
