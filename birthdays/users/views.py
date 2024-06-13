@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -27,6 +28,17 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         followers = User.objects.prefetch_related(
             'follower', 'following').filter(follower__author=request.user)
         serializer = self.get_serializer(followers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def get_birthday_users(self, request):
+        """Получение именинников."""
+        current_date = timezone.now().date()
+        users_with_birthday_today = User.objects.filter(
+            birth_date__day=current_date.day,
+            birth_date__month=current_date.month
+        )
+        serializer = self.get_serializer(users_with_birthday_today, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
