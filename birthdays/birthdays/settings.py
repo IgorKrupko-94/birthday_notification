@@ -132,3 +132,23 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://0.0.0.0:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND',
+                            default='redis://0.0.0.0:6379/0')
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_IMPORTS = ('users.tasks',)
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = str(env('EMAIL_HOST'))
+EMAIL_PORT = str(env('EMAIL_PORT'))
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_TIMEOUT = None
+EMAIL_HOST_USER = str(env('EMAIL_HOST_USER'))
+EMAIL_HOST_PASSWORD = str(env('EMAIL_HOST_PASSWORD'))
+DEFAULT_FROM_EMAIL = str(env('EMAIL_HOST_USER'))
+DEFAULT_TO_EMAIL = str(env('DEFAULT_TO_EMAIL'))

@@ -1,4 +1,5 @@
 from djoser.serializers import UserSerializer, UserCreateSerializer
+from rest_framework import serializers
 
 from .models import User
 
@@ -15,3 +16,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         model = User
         fields = ('username', 'password', 'birth_date', 'first_name',
                   'last_name', 'email')
+
+
+class SendCongratulateSerializer(serializers.Serializer):
+    message = serializers.CharField(max_length=1000)

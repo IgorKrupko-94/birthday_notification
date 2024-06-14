@@ -7,7 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User, Follow
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, SendCongratulateSerializer
+from .tasks import send_congratulation_task
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -59,3 +60,13 @@ class UnfollowAPIView(APIView):
         follow = get_object_or_404(Follow, user=user_me, author=follow_user)
         follow.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CongratulateAPIView(APIView):
+    def post(self, request, user_id):
+        serializer = SendCongratulateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_birthday = get_object_or_404(User, pk=user_id)
+        send_congratulation_task.delay(user_birthday.email,
+                                       serializer.validated_data.message)
+        return Response(status=status.HTTP_200_OK)
