@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from django.core.management.utils import get_random_secret_key
 from environs import Env
 
@@ -143,7 +144,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'run-every-5-minutes': {
         'task': 'users.tasks.check_birthday_users_task',
-        'schedule': 300,
+        'schedule': crontab(minute=0, hour=9),
     },
 }
 
