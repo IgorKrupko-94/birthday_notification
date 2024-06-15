@@ -12,6 +12,7 @@ from .tasks import send_congratulation_task
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для работы с объектами модели User."""
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
@@ -44,6 +45,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FollowAPIView(APIView):
+    """APIView-класс для создания подписок."""
     def post(self, request, user_id):
         user_me = self.request.user
         follow_user = get_object_or_404(User, pk=user_id)
@@ -54,6 +56,7 @@ class FollowAPIView(APIView):
 
 
 class UnfollowAPIView(APIView):
+    """APIView-класс для удаления подписок."""
     def delete(self, request, user_id):
         user_me = self.request.user
         follow_user = get_object_or_404(User, pk=user_id)
@@ -63,10 +66,11 @@ class UnfollowAPIView(APIView):
 
 
 class CongratulateAPIView(APIView):
+    """APIView-класс для отправки сообщений с поздравлениями."""
     def post(self, request, user_id):
         serializer = SendCongratulateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_birthday = get_object_or_404(User, pk=user_id)
         send_congratulation_task.delay(user_birthday.email,
-                                       serializer.validated_data.message)
+                                       serializer.validated_data['message'])
         return Response(status=status.HTTP_200_OK)

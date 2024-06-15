@@ -12,5 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('follow/<int:user_id>', FollowAPIView.as_view()),
     path('unfollow/<int:user_id>', UnfollowAPIView.as_view()),
-    path('congratulate/<int:user_id>', CongratulateAPIView())
+    path('congratulate/<int:user_id>', CongratulateAPIView().as_view())
 ]

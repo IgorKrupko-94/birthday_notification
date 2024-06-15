@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 
 
 def send_notification(user_email: str, birthday_users_list: list[str]) -> None:
@@ -11,10 +11,16 @@ def send_notification(user_email: str, birthday_users_list: list[str]) -> None:
         subject='Сегодня родились и ждут поздравления...',
         body=message,
         from_email=from_email,
-        to=user_email
+        to=[user_email]
     )
     email.send()
 
 
 def send_congratulation(user_email: str, message: str) -> None:
-    pass
+    send_mail(
+        subject='Поздравление с днем рождения!!!',
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[user_email],
+        fail_silently=False,
+    )

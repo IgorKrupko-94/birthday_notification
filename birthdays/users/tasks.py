@@ -3,10 +3,10 @@ from django.utils import timezone
 
 from .models import User
 from .services import send_notification, send_congratulation
-from ..birthdays.celery import app
+from birthdays.celery import app
 
 
-@shared_task(name='check_birthday_users_task')
+@shared_task
 def check_birthday_users_task():
     current_date = timezone.now().date()
     users_for_sending_notifications = User.objects.exclude(

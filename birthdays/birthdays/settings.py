@@ -8,7 +8,7 @@ from environs import Env
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = Env()
-env.read_env(os.path.join(BASE_DIR.parent, '.env'))
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY', get_random_secret_key())
 
@@ -140,7 +140,12 @@ CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_IMPORTS = ('users.tasks',)
+CELERY_BEAT_SCHEDULE = {
+    'run-every-5-minutes': {
+        'task': 'users.tasks.check_birthday_users_task',
+        'schedule': 300,
+    },
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = str(env('EMAIL_HOST'))

@@ -1,8 +1,8 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
-    image: postgres:16.0-alpine
+    image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -23,16 +23,28 @@ services:
     depends_on:
       - db
       - redis
-      - celery
+      - celery_worker
+      - celery_beat
 
   redis:
     image: "redis:latest"
     restart: unless-stopped
 
-  celery:
+  celery_worker:
     build: .
     restart: always
     command: celery -A birthdays worker --loglevel=info
+    volumes:
+      - static_value:/app/static/
+      - media_value:/app/media/
+    depends_on:
+      - redis
+      - db
+  
+  celery_beat:
+    build: .
+    restart: always
+    command: celery -A birthdays beat --loglevel=info
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
